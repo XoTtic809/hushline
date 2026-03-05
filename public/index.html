@@ -762,7 +762,13 @@ function connectSocket() {
     clearTimeout(typingTimer);
     typingTimer = setTimeout(() => { typingBar.innerHTML = ''; }, 2000);
   });
-  socket.on('room_created', ({ name }) => { joinRoom(name); showToast(`Room #${name} created!`); });
+  socket.on('room_created', ({ name }) => {
+    crName.value = ''; crDesc.value = '';
+    crForm.classList.remove('open');
+    crSubmit.disabled = false;
+    joinRoom(name);
+    showToast(`Room #${name} created!`);
+  });
   socket.on('room_deleted', ({ name }) => {
     if (currentRoom === name) {
       currentRoom = null;
@@ -773,7 +779,11 @@ function connectSocket() {
     }
     showToast(`Room #${name} was deleted.`);
   });
-  socket.on('room_error', msg => { crError.textContent = msg; });
+  socket.on('room_error', msg => {
+    crError.textContent = msg;
+    crForm.classList.add('open');
+    crSubmit.disabled = false;
+  });
 }
 
 function renderRooms(rooms) {
@@ -840,9 +850,12 @@ function joinRoom(name) {
 
 crToggle.addEventListener('click', () => crForm.classList.toggle('open'));
 crSubmit.addEventListener('click', () => {
+  if (!socket) return;
+  const name = crName.value.trim();
+  if (!name) { crError.textContent = 'Enter a room name.'; return; }
   crError.textContent = '';
-  socket.emit('create_room', { name: crName.value, description: crDesc.value });
-  crName.value = ''; crDesc.value = ''; crForm.classList.remove('open');
+  crSubmit.disabled = true;
+  socket.emit('create_room', { name, description: crDesc.value });
 });
 crName.addEventListener('keydown', e => e.key === 'Enter' && crSubmit.click());
 
