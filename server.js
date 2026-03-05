@@ -60,11 +60,7 @@ db.exec(`
 
 // ── Seed default community rooms ───────────────────────────────────────────
 const defaultRooms = [
-  { name: 'general',   description: 'Main hangout for everyone',    type: 'community' },
-  { name: 'music',     description: 'Share and discover music',      type: 'community' },
-  { name: 'tech',      description: 'All things technology',         type: 'community' },
-  { name: 'creative',  description: 'Art, design, writing, making',  type: 'community' },
-  { name: 'random',    description: 'Anything goes',                  type: 'community' },
+  { name: 'general', description: 'Main hangout for everyone', type: 'community' },
 ];
 
 const insertRoom = db.prepare(`
