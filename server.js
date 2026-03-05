@@ -143,7 +143,7 @@ function getRoomOnline(roomName) {
 }
 
 function getRoomList() {
-  const rooms = db.prepare('SELECT id, name, description, type FROM rooms ORDER BY type ASC, name ASC').all();
+  const rooms = db.prepare('SELECT id, name, description, type, created_by FROM rooms ORDER BY type ASC, name ASC').all();
   return rooms.map(r => {
     const last = db.prepare(
       'SELECT username, color, text, created_at FROM messages WHERE room_id=? ORDER BY created_at DESC LIMIT 1'
@@ -219,6 +219,25 @@ io.on('connection', (socket) => {
     db.prepare('INSERT INTO rooms (name, description, type, created_by) VALUES (?,?,?,?)').run(n, d, 'user', user.id);
     io.emit('room_list', getRoomList());
     socket.emit('room_created', { name: n });
+  });
+
+
+  socket.on('delete_room', ({ name }) => {
+    const room = db.prepare('SELECT * FROM rooms WHERE name = ?').get(name);
+    if (!room) return socket.emit('room_error', 'Room not found.');
+    if (room.type === 'community') return socket.emit('room_error', 'Cannot delete community rooms.');
+    if (room.created_by !== user.id) return socket.emit('room_error', 'You can only delete rooms you created.');
+
+    // Kick everyone out of the room first
+    if (onlineRooms[name]) {
+      io.to(name).emit('system_message', { text: 'This room has been deleted.', timestamp: Date.now() });
+      io.to(name).emit('room_deleted', { name });
+      delete onlineRooms[name];
+    }
+
+    db.prepare('DELETE FROM messages WHERE room_id = ?').run(room.id);
+    db.prepare('DELETE FROM rooms WHERE id = ?').run(room.id);
+    io.emit('room_list', getRoomList());
   });
 
   socket.on('typing', () => {
