@@ -185,6 +185,18 @@
     .h-settings:hover{border-color:var(--accent2);color:var(--accent3);background:var(--accent-dim);}
     .h-settings svg{width:14px;height:14px;}
 
+
+    /* ── Delete room button ── */
+    .room-item .ri-delete{
+      display:none;width:22px;height:22px;border-radius:6px;
+      background:transparent;border:1px solid transparent;
+      color:var(--text4);cursor:pointer;
+      align-items:center;justify-content:center;
+      font-size:.75rem;transition:all .2s;flex-shrink:0;
+    }
+    .room-item:hover .ri-delete{display:flex;}
+    .room-item .ri-delete:hover{background:rgba(248,113,113,.15);border-color:var(--error);color:var(--error);}
+
     /* ── Left sidebar ── */
     #sidebar-rooms{background:rgba(0,0,0,.35);backdrop-filter:blur(12px);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
     .sb-top{padding:1rem 1rem .6rem;}
@@ -751,6 +763,16 @@ function connectSocket() {
     typingTimer = setTimeout(() => { typingBar.innerHTML = ''; }, 2000);
   });
   socket.on('room_created', ({ name }) => { joinRoom(name); showToast(`Room #${name} created!`); });
+  socket.on('room_deleted', ({ name }) => {
+    if (currentRoom === name) {
+      currentRoom = null;
+      chatMain.style.display = 'none';
+      noRoomPh.style.display = '';
+      hRoomName.textContent = 'no room';
+      msgInput.disabled = true; sendBtn.disabled = true;
+    }
+    showToast(`Room #${name} was deleted.`);
+  });
   socket.on('room_error', msg => { crError.textContent = msg; });
 }
 
@@ -777,13 +799,26 @@ function makeRoomItem(r) {
   item.className = 'room-item' + (r.name === currentRoom ? ' active' : '');
   item.dataset.room = r.name;
   const badge = r.onlineCount > 0 ? `<span class="ri-badge">${r.onlineCount}</span>` : '';
+  const canDelete = me && r.created_by === me.id;
+  const delBtn = canDelete ? `<button class="ri-delete" title="Delete room">✕</button>` : '';
   item.innerHTML = `
     <div class="ri-icon">${r.name[0].toUpperCase()}</div>
     <div class="ri-info">
       <div class="ri-name">${esc(r.name)}</div>
       ${r.description ? `<div class="ri-desc">${esc(r.description)}</div>` : ''}
-    </div>${badge}`;
-  item.addEventListener('click', () => joinRoom(r.name));
+    </div>${badge}${delBtn}`;
+  item.addEventListener('click', e => {
+    if (e.target.closest('.ri-delete')) return;
+    joinRoom(r.name);
+  });
+  if (canDelete) {
+    item.querySelector('.ri-delete').addEventListener('click', e => {
+      e.stopPropagation();
+      if (confirm(`Delete #${r.name}? This cannot be undone.`)) {
+        socket.emit('delete_room', { name: r.name });
+      }
+    });
+  }
   return item;
 }
 
