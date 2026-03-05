@@ -58,6 +58,16 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_messages_room ON messages(room_id, created_at);
 `);
 
+// ── Remove old default rooms ─────────────────────────────────────────────
+['music', 'tech', 'creative', 'random'].forEach(name => {
+  const row = db.prepare('SELECT id FROM rooms WHERE name = ? AND type = ?').get(name, 'community');
+  if (row) {
+    db.prepare('DELETE FROM messages WHERE room_id = ?').run(row.id);
+    db.prepare('DELETE FROM rooms WHERE id = ?').run(row.id);
+    console.log('Removed default room: ' + name);
+  }
+});
+
 // ── Seed default community rooms ───────────────────────────────────────────
 const defaultRooms = [
   { name: 'general', description: 'Main hangout for everyone', type: 'community' },
