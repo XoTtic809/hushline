@@ -283,6 +283,45 @@
     /* Password modal */
     #pw-modal .modal-box{width:min(360px,94vw);}
 
+    /* ── Profile modal ── */
+    #profile-overlay .modal-box{width:min(380px,94vw);}
+    .prof-banner{height:70px;background:linear-gradient(135deg,var(--accent),var(--accent2b));position:relative;}
+    .prof-av-wrap{position:absolute;bottom:-28px;left:1.5rem;}
+    .prof-av{width:56px;height:56px;border-radius:16px;border:3px solid var(--surface);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:700;box-shadow:0 0 20px var(--accent-glow);}
+    .prof-body{padding:2.2rem 1.5rem 1.5rem;display:flex;flex-direction:column;gap:1rem;}
+    .prof-name{font-family:var(--font-brand);font-size:1.15rem;font-weight:700;color:var(--text);}
+    .prof-meta{display:flex;gap:1rem;font-size:.75rem;color:var(--text4);}
+    .prof-meta span{display:flex;align-items:center;gap:.3rem;}
+    .prof-actions{display:flex;gap:.6rem;flex-wrap:wrap;}
+    .prof-btn{flex:1;min-width:100px;padding:.6rem .8rem;border-radius:10px;font-family:var(--font-ui);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;border:1px solid var(--border);background:var(--surface2);color:var(--text2);display:flex;align-items:center;justify-content:center;gap:.4rem;}
+    .prof-btn svg{width:14px;height:14px;flex-shrink:0;}
+    .prof-btn:hover{border-color:var(--accent2);color:var(--accent3);background:var(--accent-dim);}
+    .prof-btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2b));border-color:transparent;color:white;box-shadow:0 4px 12px var(--accent-glow);}
+    .prof-btn.primary:hover{box-shadow:0 6px 20px var(--accent-glow);transform:translateY(-1px);}
+    .prof-btn.success{background:rgba(52,211,153,.15);border-color:var(--online);color:var(--online);}
+    .prof-btn.danger{background:rgba(248,113,113,.1);border-color:var(--error);color:var(--error);}
+    .prof-btn:disabled{opacity:.5;cursor:not-allowed;transform:none !important;}
+
+    /* ── Friend request badge on DMs tab ── */
+    .sb-tab{position:relative;}
+    .freq-badge{position:absolute;top:3px;right:3px;width:8px;height:8px;border-radius:50%;background:var(--error);box-shadow:0 0 6px var(--error);animation:pulse 2s infinite;}
+    body.no-anim .freq-badge{animation:none;}
+
+    /* ── Friend requests panel ── */
+    .freq-panel{background:var(--surface);border:1px solid var(--border2);border-radius:14px;margin:.5rem .6rem;padding:.8rem;display:flex;flex-direction:column;gap:.5rem;}
+    .freq-title{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent3);}
+    .freq-item{display:flex;align-items:center;gap:.5rem;}
+    .freq-av{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0;}
+    .freq-name{font-size:.8rem;color:var(--text2);font-weight:500;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .freq-action-btn{width:24px;height:24px;border-radius:6px;border:1px solid transparent;cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center;transition:all .15s;background:transparent;}
+    .freq-action-btn.accept{border-color:var(--online);color:var(--online);}
+    .freq-action-btn.accept:hover{background:rgba(52,211,153,.2);}
+    .freq-action-btn.decline{border-color:var(--error);color:var(--error);}
+    .freq-action-btn.decline:hover{background:rgba(248,113,113,.2);}
+
+    /* ── Online item clickable style ── */
+    .online-item{cursor:pointer;}
+
     /* Toast */
     .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:.75rem 1.1rem;font-size:.8rem;color:var(--text2);box-shadow:0 8px 30px rgba(0,0,0,.5),0 0 0 1px var(--accent-dim);z-index:999;animation:toastIn .4s cubic-bezier(.34,1.56,.64,1);}
     body.no-anim .toast{animation:none;}
@@ -396,6 +435,28 @@
   </div>
 </div>
 
+<!-- ══ PROFILE MODAL ══════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="profile-overlay">
+  <div class="modal-box">
+    <div class="prof-banner" id="prof-banner">
+      <div class="prof-av-wrap">
+        <div class="prof-av" id="prof-av"></div>
+      </div>
+      <button class="modal-close" id="profile-close" style="position:absolute;top:.7rem;right:.7rem;">✕</button>
+    </div>
+    <div class="prof-body">
+      <div>
+        <div class="prof-name" id="prof-name"></div>
+        <div class="prof-meta">
+          <span id="prof-joined"></span>
+          <span id="prof-friends-count"></span>
+        </div>
+      </div>
+      <div class="prof-actions" id="prof-actions"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ══ APP ════════════════════════════════════════════════════════════ -->
 <div id="app">
   <header>
@@ -448,6 +509,7 @@
 
     <!-- DMs panel -->
     <div class="sb-panel hidden" id="sb-dms-panel">
+      <div id="freq-panel-wrap"></div>
       <button class="dm-new-btn" id="dm-new-btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         New Message
@@ -577,6 +639,7 @@ let token    = localStorage.getItem('hl_token');
 let me       = JSON.parse(localStorage.getItem('hl_user') || 'null');
 let socket   = null;
 let allRooms = [], allConvs = [], allUsers = [];
+let friendData = { friends: [], sent: [], received: [] };
 let activeCtx = null; // { type: 'room', name } or { type: 'dm', convId }
 let sessionRoomPasswords = {}; // { roomName: password } remembered this session
 let typingTimer = null, dmTypingTimers = {};
@@ -709,6 +772,8 @@ function openDmModal() {
   $('dm-group-name-wrap').classList.remove('show');
   $('dm-group-name').value = '';
   $('dm-error').textContent = '';
+  // Always fetch fresh user list when opening
+  if (socket) socket.emit('get_user_list');
   renderDmUserList();
   dmOverlay.classList.add('open');
 }
@@ -788,7 +853,31 @@ function connectSocket() {
 
   socket.on('room_list',  rooms  => { allRooms = rooms;  renderRooms(rooms); });
   socket.on('conv_list',  convs  => { allConvs = convs;  renderConvs(convs); });
-  socket.on('user_list',  users  => { allUsers = users;  });
+  socket.on('user_list',  users  => {
+    allUsers = users;
+    // Re-render DM user list if modal is open
+    if (dmOverlay.classList.contains('open')) renderDmUserList();
+  });
+  socket.on('friend_data', data => {
+    friendData = data;
+    renderFriendRequests();
+    // If profile modal is open, refresh its buttons
+    if ($('profile-overlay').classList.contains('open') && currentProfileUsername) {
+      refreshProfileButtons(currentProfileUsername);
+    }
+  });
+  socket.on('friend_notify', ({ type, username, fromId }) => {
+    if (type === 'request') {
+      showToast(`👋 ${username} sent you a friend request!`);
+      // Switch to messages tab badge
+      updateFreqBadge();
+    } else if (type === 'accepted') {
+      showToast(`🎉 ${username} accepted your friend request!`);
+    }
+  });
+  socket.on('friend_online', ({ username }) => {
+    // Could show a subtle toast, kept quiet for now
+  });
 
   // ── Room events ──
   socket.on('room_join_ok', ({ room }) => {
@@ -1125,17 +1214,160 @@ function renderOnlineUsers(users) {
     const item = document.createElement('div');
     item.className = 'online-item';
     const init = u.username.slice(0,2).toUpperCase();
-    const sub = u.isSelf ? '<span class="oi-dm">you</span>' : '';
+    const isSelf = u.isSelf || u.username === me.username;
+    const sub = isSelf ? '<span class="oi-dm">you</span>' : '<span class="oi-dm">click to view</span>';
     item.innerHTML = `<div class="oi-av" style="background:${u.color}25;color:${u.color};border:1px solid ${u.color}40">${init}</div><div style="flex:1;min-width:0"><div class="oi-name">${esc(u.username)}</div>${sub}</div>`;
-    if (!u.isSelf && activeCtx?.type === 'room') {
-      item.title = `DM ${u.username}`;
-      item.addEventListener('click', () => {
-        const uid = allUsers.find(x => x.username === u.username)?.id;
-        if (uid) socket.emit('start_dm', { userId: uid });
-      });
+    if (!isSelf) {
+      item.addEventListener('click', () => openProfile(u.username));
     }
     el.appendChild(item);
   });
+}
+
+/* ══ PROFILE MODAL ═══════════════════════════════════════════════════ */
+let currentProfileUsername = null;
+
+$('profile-close').addEventListener('click', () => { $('profile-overlay').classList.remove('open'); currentProfileUsername = null; });
+$('profile-overlay').addEventListener('click', e => { if (e.target === $('profile-overlay')) { $('profile-overlay').classList.remove('open'); currentProfileUsername = null; } });
+
+async function openProfile(username) {
+  currentProfileUsername = username;
+  $('prof-name').textContent = '…';
+  $('prof-joined').textContent = '';
+  $('prof-friends-count').textContent = '';
+  $('prof-actions').innerHTML = '<span style="font-size:.8rem;color:var(--text4)">Loading…</span>';
+  $('profile-overlay').classList.add('open');
+
+  try {
+    const res = await fetch(`/api/profile/${encodeURIComponent(username)}`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (!res.ok) { $('prof-name').textContent = 'User not found'; $('prof-actions').innerHTML = ''; return; }
+    const data = await res.json();
+
+    // Banner + avatar color
+    const col = data.color || 'var(--accent)';
+    $('prof-banner').style.background = `linear-gradient(135deg, ${col}88, ${col}44)`;
+    $('prof-av').style.background = col + '33';
+    $('prof-av').style.color = col;
+    $('prof-av').style.border = `3px solid var(--surface)`;
+    $('prof-av').textContent = data.username.slice(0,2).toUpperCase();
+
+    $('prof-name').textContent = data.username;
+    const joined = new Date(data.created_at * 1000).toLocaleDateString([], { month: 'long', year: 'numeric' });
+    $('prof-joined').innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Joined ${joined}`;
+    $('prof-friends-count').innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> ${data.friendCount} friend${data.friendCount !== 1 ? 's' : ''}`;
+
+    buildProfileActions(data);
+  } catch { $('prof-name').textContent = 'Error loading profile'; $('prof-actions').innerHTML = ''; }
+}
+
+function buildProfileActions(data) {
+  const wrap = $('prof-actions');
+  wrap.innerHTML = '';
+  if (data.isSelf) {
+    wrap.innerHTML = '<span style="font-size:.78rem;color:var(--text4)">This is you!</span>';
+    return;
+  }
+
+  // DM button always shown
+  const dmBtn = document.createElement('button');
+  dmBtn.className = 'prof-btn primary';
+  dmBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Message`;
+  dmBtn.addEventListener('click', () => {
+    socket.emit('start_dm', { userId: data.id });
+    $('profile-overlay').classList.remove('open');
+  });
+  wrap.appendChild(dmBtn);
+
+  // Friend button — state depends on relationship
+  const friendBtn = document.createElement('button');
+  if (data.isFriend) {
+    friendBtn.className = 'prof-btn success';
+    friendBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Friends`;
+    friendBtn.addEventListener('click', () => {
+      if (confirm(`Remove ${data.username} as a friend?`)) {
+        socket.emit('remove_friend', { userId: data.id });
+        friendBtn.disabled = true;
+      }
+    });
+  } else if (data.iSent) {
+    friendBtn.className = 'prof-btn';
+    friendBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> Request Sent`;
+    friendBtn.addEventListener('click', () => {
+      socket.emit('cancel_friend_request', { toUserId: data.id });
+      friendBtn.disabled = true;
+    });
+  } else if (data.theySent) {
+    friendBtn.className = 'prof-btn success';
+    friendBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg> Accept Request`;
+    friendBtn.addEventListener('click', () => {
+      socket.emit('accept_friend_request', { fromUserId: data.id });
+      friendBtn.disabled = true;
+    });
+  } else {
+    friendBtn.className = 'prof-btn';
+    friendBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg> Add Friend`;
+    friendBtn.addEventListener('click', () => {
+      socket.emit('send_friend_request', { toUserId: data.id });
+      friendBtn.disabled = true;
+      friendBtn.textContent = 'Request Sent';
+    });
+  }
+  wrap.appendChild(friendBtn);
+}
+
+function refreshProfileButtons(username) {
+  // Re-fetch profile to update buttons after friend status changes
+  if ($('profile-overlay').classList.contains('open') && currentProfileUsername === username) {
+    openProfile(username);
+  }
+}
+
+/* ══ FRIEND REQUESTS PANEL ═══════════════════════════════════════════ */
+function renderFriendRequests() {
+  updateFreqBadge();
+  const wrap = $('freq-panel-wrap');
+  wrap.innerHTML = '';
+  const received = friendData.received || [];
+  if (!received.length) return;
+
+  const panel = document.createElement('div');
+  panel.className = 'freq-panel';
+  panel.innerHTML = `<div class="freq-title">Friend Requests (${received.length})</div>`;
+  received.forEach(u => {
+    const row = document.createElement('div');
+    row.className = 'freq-item';
+    const init = u.username.slice(0,2).toUpperCase();
+    row.innerHTML = `
+      <div class="freq-av" style="background:${u.color}22;color:${u.color};border:1px solid ${u.color}40">${init}</div>
+      <span class="freq-name">${esc(u.username)}</span>
+      <button class="freq-action-btn accept" title="Accept">✓</button>
+      <button class="freq-action-btn decline" title="Decline">✕</button>`;
+    row.querySelector('.accept').addEventListener('click', () => {
+      socket.emit('accept_friend_request', { fromUserId: u.id });
+    });
+    row.querySelector('.decline').addEventListener('click', () => {
+      socket.emit('decline_friend_request', { fromUserId: u.id });
+    });
+    // Click name to view profile
+    row.querySelector('.freq-name').style.cursor = 'pointer';
+    row.querySelector('.freq-name').addEventListener('click', () => openProfile(u.username));
+    panel.appendChild(row);
+  });
+  wrap.appendChild(panel);
+}
+
+function updateFreqBadge() {
+  const dmsTab = document.querySelector('.sb-tab[data-sb="dms"]');
+  if (!dmsTab) return;
+  let badge = dmsTab.querySelector('.freq-badge');
+  const count = (friendData.received || []).length;
+  if (count > 0) {
+    if (!badge) { badge = document.createElement('div'); badge.className = 'freq-badge'; dmsTab.appendChild(badge); }
+  } else {
+    if (badge) badge.remove();
+  }
 }
 
 /* ══ SEND MESSAGE ════════════════════════════════════════════════════ */
@@ -1160,7 +1392,13 @@ function sendMessage() {
 function appendMsg(msg) {
   const g = document.createElement('div'); g.className = 'msg-group';
   const init = msg.username.slice(0,2).toUpperCase();
-  g.innerHTML = `<div class="msg-av" style="background:${msg.color}20;color:${msg.color};border:1px solid ${msg.color}35">${init}</div><div class="msg-body"><div class="msg-meta"><span class="msg-user" style="color:${msg.color}">${esc(msg.username)}</span><span class="msg-time">${fmtTime(msg.timestamp)}</span></div><div class="msg-text">${esc(msg.text)}</div></div>`;
+  const isSelf = msg.username === me?.username;
+  g.innerHTML = `<div class="msg-av" style="background:${msg.color}20;color:${msg.color};border:1px solid ${msg.color}35;cursor:${isSelf?'default':'pointer'}">${init}</div><div class="msg-body"><div class="msg-meta"><span class="msg-user" style="color:${msg.color};cursor:${isSelf?'default':'pointer'}">${esc(msg.username)}</span><span class="msg-time">${fmtTime(msg.timestamp)}</span></div><div class="msg-text">${esc(msg.text)}</div></div>`;
+  if (!isSelf) {
+    const clickOpen = () => openProfile(msg.username);
+    g.querySelector('.msg-av').addEventListener('click', clickOpen);
+    g.querySelector('.msg-user').addEventListener('click', clickOpen);
+  }
   $('messages').appendChild(g);
 }
 
